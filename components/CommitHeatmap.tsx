@@ -1,4 +1,4 @@
-import React, { useMemo } from "react";
+import React from "react";
 import { ScrollView, Text, View } from "react-native";
 
 interface CommitHeatmapProps {
@@ -16,8 +16,7 @@ export function CommitHeatmap({
   pillarId,
   period,
 }: CommitHeatmapProps): React.JSX.Element {
-  const heatmapData = useMemo(() => {
-    // Generate mock data for demonstration
+  const generateHeatmapData = () => {
     const days: HeatmapDay[] = [];
     const now = new Date();
     const daysToShow = period === "month" ? 30 : 365;
@@ -44,7 +43,9 @@ export function CommitHeatmap({
     }
 
     return days;
-  }, [period, pillarId]);
+  };
+
+  const heatmapData = generateHeatmapData();
 
   const getCellColor = (level: number): string => {
     const colors = [

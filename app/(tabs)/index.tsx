@@ -6,13 +6,11 @@ import { useAppStore } from "@/stores/app-store";
 import { useAuthStore } from "@/stores/auth-store";
 import React, { useEffect, useState } from "react";
 import { RefreshControl, ScrollView, Text, View } from "react-native";
-import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 export default function DashboardScreen(): React.JSX.Element {
   const { user } = useAuthStore();
   const { pillars, todayActions, loading, loadSampleData } = useAppStore();
   const [refreshing, setRefreshing] = useState(false);
-  const insets = useSafeAreaInsets();
 
   // Load sample data on first render for development
   useEffect(() => {
@@ -42,7 +40,7 @@ export default function DashboardScreen(): React.JSX.Element {
   });
 
   return (
-    <View className="flex-1 bg-gray-50" style={{ paddingTop: insets.top }}>
+    <View className="flex-1 bg-gray-50" style={{ paddingTop: 50 }}>
       <ScrollView
         className="flex-1"
         refreshControl={

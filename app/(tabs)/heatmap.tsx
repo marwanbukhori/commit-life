@@ -1,61 +1,150 @@
 import { CommitHeatmap } from "@/components/CommitHeatmap";
 import { useAppStore } from "@/stores/app-store";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { ScrollView, Text, TouchableOpacity, View } from "react-native";
-import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 export default function HeatmapScreen(): React.JSX.Element {
-  const { pillars } = useAppStore();
   const [selectedPillar, setSelectedPillar] = useState<string | null>(null);
   const [selectedPeriod, setSelectedPeriod] = useState<"month" | "year">(
     "year"
   );
-  const insets = useSafeAreaInsets();
+  const [isReady, setIsReady] = useState(false);
+
+  // Safety delay to ensure navigation context is ready
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setIsReady(true);
+    }, 100);
+    return () => clearTimeout(timer);
+  }, []);
+
+  // Get pillars from store with fallback
+  let pillars: any[] = [];
+  try {
+    const store = useAppStore();
+    pillars = store?.pillars || [];
+  } catch (error) {
+    console.warn("Store not ready:", error);
+  }
+
+  if (!isReady) {
+    return (
+      <View style={{ flex: 1, backgroundColor: "#f9fafb", paddingTop: 50 }}>
+        <View
+          style={{
+            backgroundColor: "white",
+            paddingHorizontal: 24,
+            paddingTop: 12,
+            paddingBottom: 24,
+            borderBottomWidth: 1,
+            borderBottomColor: "#e5e7eb",
+          }}
+        >
+          <Text style={{ fontSize: 24, fontWeight: "bold", color: "#111827" }}>
+            Progress Heatmap
+          </Text>
+          <Text style={{ color: "#6b7280", marginTop: 4 }}>Loading...</Text>
+        </View>
+      </View>
+    );
+  }
 
   return (
-    <View className="flex-1 bg-gray-50" style={{ paddingTop: insets.top }}>
+    <View style={{ flex: 1, backgroundColor: "#f9fafb", paddingTop: 50 }}>
       {/* Header */}
-      <View className="bg-white px-6 pt-3 pb-6 border-b border-gray-200">
-        <Text className="text-2xl font-bold text-gray-900">
+      <View
+        style={{
+          backgroundColor: "white",
+          paddingHorizontal: 24,
+          paddingTop: 12,
+          paddingBottom: 24,
+          borderBottomWidth: 1,
+          borderBottomColor: "#e5e7eb",
+        }}
+      >
+        <Text style={{ fontSize: 24, fontWeight: "bold", color: "#111827" }}>
           Progress Heatmap
         </Text>
-        <Text className="text-gray-600 mt-1">
+        <Text style={{ color: "#6b7280", marginTop: 4 }}>
           Visualize your commit journey
         </Text>
       </View>
 
-      <ScrollView className="flex-1">
+      <ScrollView style={{ flex: 1 }}>
         {/* Filter Controls */}
-        <View className="bg-white mx-6 mt-4 rounded-xl p-4 border border-gray-200">
+        <View
+          style={{
+            backgroundColor: "white",
+            marginHorizontal: 24,
+            marginTop: 16,
+            borderRadius: 12,
+            padding: 16,
+            borderWidth: 1,
+            borderColor: "#e5e7eb",
+          }}
+        >
           {/* Period Toggle */}
-          <Text className="text-sm font-medium text-gray-700 mb-3">
+          <Text
+            style={{
+              fontSize: 14,
+              fontWeight: "500",
+              color: "#374151",
+              marginBottom: 12,
+            }}
+          >
             Time Period
           </Text>
-          <View className="flex-row bg-gray-100 rounded-lg p-1 mb-4">
+          <View
+            style={{
+              flexDirection: "row",
+              backgroundColor: "#f3f4f6",
+              borderRadius: 8,
+              padding: 4,
+              marginBottom: 16,
+            }}
+          >
             <TouchableOpacity
-              className={`flex-1 rounded-md py-2 ${
-                selectedPeriod === "month" ? "bg-white shadow-sm" : ""
-              }`}
+              style={{
+                flex: 1,
+                borderRadius: 6,
+                paddingVertical: 8,
+                backgroundColor:
+                  selectedPeriod === "month" ? "white" : "transparent",
+                shadowOpacity: selectedPeriod === "month" ? 0.1 : 0,
+                shadowRadius: 2,
+                shadowOffset: { width: 0, height: 1 },
+              }}
               onPress={() => setSelectedPeriod("month")}
             >
               <Text
-                className={`text-center font-medium ${
-                  selectedPeriod === "month" ? "text-gray-900" : "text-gray-600"
-                }`}
+                style={{
+                  textAlign: "center",
+                  fontWeight: "500",
+                  color: selectedPeriod === "month" ? "#111827" : "#6b7280",
+                }}
               >
                 This Month
               </Text>
             </TouchableOpacity>
             <TouchableOpacity
-              className={`flex-1 rounded-md py-2 ${
-                selectedPeriod === "year" ? "bg-white shadow-sm" : ""
-              }`}
+              style={{
+                flex: 1,
+                borderRadius: 6,
+                paddingVertical: 8,
+                backgroundColor:
+                  selectedPeriod === "year" ? "white" : "transparent",
+                shadowOpacity: selectedPeriod === "year" ? 0.1 : 0,
+                shadowRadius: 2,
+                shadowOffset: { width: 0, height: 1 },
+              }}
               onPress={() => setSelectedPeriod("year")}
             >
               <Text
-                className={`text-center font-medium ${
-                  selectedPeriod === "year" ? "text-gray-900" : "text-gray-600"
-                }`}
+                style={{
+                  textAlign: "center",
+                  fontWeight: "500",
+                  color: selectedPeriod === "year" ? "#111827" : "#6b7280",
+                }}
               >
                 This Year
               </Text>
@@ -63,81 +152,157 @@ export default function HeatmapScreen(): React.JSX.Element {
           </View>
 
           {/* Pillar Filter */}
-          <Text className="text-sm font-medium text-gray-700 mb-3">
+          <Text
+            style={{
+              fontSize: 14,
+              fontWeight: "500",
+              color: "#374151",
+              marginBottom: 12,
+            }}
+          >
             Filter by Pillar
           </Text>
           <ScrollView
             horizontal
             showsHorizontalScrollIndicator={false}
-            className="space-x-2"
+            style={{ marginHorizontal: -4 }}
           >
-            <TouchableOpacity
-              className={`px-4 py-2 rounded-full border ${
-                selectedPillar === null
-                  ? "bg-primary-500 border-primary-500"
-                  : "bg-white border-gray-300"
-              }`}
-              onPress={() => setSelectedPillar(null)}
-            >
-              <Text
-                className={`font-medium ${
-                  selectedPillar === null ? "text-white" : "text-gray-700"
-                }`}
-              >
-                All Pillars
-              </Text>
-            </TouchableOpacity>
-            {pillars.map((pillar) => (
+            <View style={{ flexDirection: "row", paddingHorizontal: 4 }}>
               <TouchableOpacity
-                key={pillar.id}
-                className={`px-4 py-2 rounded-full border ${
-                  selectedPillar === pillar.id
-                    ? "bg-primary-500 border-primary-500"
-                    : "bg-white border-gray-300"
-                }`}
-                onPress={() => setSelectedPillar(pillar.id)}
+                style={{
+                  paddingHorizontal: 16,
+                  paddingVertical: 8,
+                  borderRadius: 20,
+                  borderWidth: 1,
+                  backgroundColor:
+                    selectedPillar === null ? "#3b82f6" : "white",
+                  borderColor: selectedPillar === null ? "#3b82f6" : "#d1d5db",
+                  marginRight: 8,
+                }}
+                onPress={() => setSelectedPillar(null)}
               >
                 <Text
-                  className={`font-medium ${
-                    selectedPillar === pillar.id
-                      ? "text-white"
-                      : "text-gray-700"
-                  }`}
+                  style={{
+                    fontWeight: "500",
+                    color: selectedPillar === null ? "white" : "#374151",
+                  }}
                 >
-                  {pillar.icon} {pillar.name}
+                  All Pillars
                 </Text>
               </TouchableOpacity>
-            ))}
+              {pillars.map((pillar) => (
+                <TouchableOpacity
+                  key={pillar.id}
+                  style={{
+                    paddingHorizontal: 16,
+                    paddingVertical: 8,
+                    borderRadius: 20,
+                    borderWidth: 1,
+                    backgroundColor:
+                      selectedPillar === pillar.id ? "#3b82f6" : "white",
+                    borderColor:
+                      selectedPillar === pillar.id ? "#3b82f6" : "#d1d5db",
+                    marginRight: 8,
+                  }}
+                  onPress={() => setSelectedPillar(pillar.id)}
+                >
+                  <Text
+                    style={{
+                      fontWeight: "500",
+                      color: selectedPillar === pillar.id ? "white" : "#374151",
+                    }}
+                  >
+                    {pillar.icon} {pillar.name}
+                  </Text>
+                </TouchableOpacity>
+              ))}
+            </View>
           </ScrollView>
         </View>
 
         {/* Heatmap */}
-        <View className="px-6 py-4">
-          <CommitHeatmap pillarId={selectedPillar} period={selectedPeriod} />
+        <View style={{ paddingHorizontal: 24, paddingVertical: 16 }}>
+          <CommitHeatmap
+            key={`${selectedPillar}-${selectedPeriod}`}
+            pillarId={selectedPillar}
+            period={selectedPeriod}
+          />
         </View>
 
         {/* Stats Summary */}
-        <View className="mx-6 mb-6">
-          <Text className="text-lg font-semibold text-gray-900 mb-4">
+        <View style={{ marginHorizontal: 24, marginBottom: 24 }}>
+          <Text
+            style={{
+              fontSize: 18,
+              fontWeight: "600",
+              color: "#111827",
+              marginBottom: 16,
+            }}
+          >
             Summary Stats
           </Text>
-          <View className="bg-white rounded-xl p-4 border border-gray-200">
-            <View className="flex-row justify-between items-center mb-4">
-              <View className="flex-1">
-                <Text className="text-2xl font-bold text-gray-900">127</Text>
-                <Text className="text-sm text-gray-600">Total Commits</Text>
+          <View
+            style={{
+              backgroundColor: "white",
+              borderRadius: 12,
+              padding: 16,
+              borderWidth: 1,
+              borderColor: "#e5e7eb",
+            }}
+          >
+            <View
+              style={{
+                flexDirection: "row",
+                justifyContent: "space-between",
+                alignItems: "center",
+                marginBottom: 16,
+              }}
+            >
+              <View style={{ flex: 1 }}>
+                <Text
+                  style={{ fontSize: 24, fontWeight: "bold", color: "#111827" }}
+                >
+                  127
+                </Text>
+                <Text style={{ fontSize: 14, color: "#6b7280" }}>
+                  Total Commits
+                </Text>
               </View>
-              <View className="flex-1">
-                <Text className="text-2xl font-bold text-success-500">15</Text>
-                <Text className="text-sm text-gray-600">Current Streak</Text>
+              <View style={{ flex: 1 }}>
+                <Text
+                  style={{ fontSize: 24, fontWeight: "bold", color: "#10b981" }}
+                >
+                  15
+                </Text>
+                <Text style={{ fontSize: 14, color: "#6b7280" }}>
+                  Current Streak
+                </Text>
               </View>
-              <View className="flex-1">
-                <Text className="text-2xl font-bold text-primary-500">42</Text>
-                <Text className="text-sm text-gray-600">Best Streak</Text>
+              <View style={{ flex: 1 }}>
+                <Text
+                  style={{ fontSize: 24, fontWeight: "bold", color: "#3b82f6" }}
+                >
+                  42
+                </Text>
+                <Text style={{ fontSize: 14, color: "#6b7280" }}>
+                  Best Streak
+                </Text>
               </View>
             </View>
-            <View className="border-t border-gray-100 pt-4">
-              <Text className="text-sm text-gray-600 text-center">
+            <View
+              style={{
+                borderTopWidth: 1,
+                borderTopColor: "#f3f4f6",
+                paddingTop: 16,
+              }}
+            >
+              <Text
+                style={{
+                  fontSize: 14,
+                  color: "#6b7280",
+                  textAlign: "center",
+                }}
+              >
                 Keep up the great work! You&apos;re building strong habits. 💪
               </Text>
             </View>

@@ -1,11 +1,9 @@
 import { useAuthStore } from "@/stores/auth-store";
 import React from "react";
 import { Alert, ScrollView, Text, TouchableOpacity, View } from "react-native";
-import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 export default function ProfileScreen(): React.JSX.Element {
   const { user, signOut } = useAuthStore();
-  const insets = useSafeAreaInsets();
 
   const handleSignOut = (): void => {
     Alert.alert("Sign Out", "Are you sure you want to sign out?", [
@@ -25,7 +23,7 @@ export default function ProfileScreen(): React.JSX.Element {
   };
 
   return (
-    <View className="flex-1 bg-gray-50" style={{ paddingTop: insets.top }}>
+    <View className="flex-1 bg-gray-50" style={{ paddingTop: 50 }}>
       {/* Header */}
       <View className="bg-white px-6 pt-3 pb-6 border-b border-gray-200">
         <Text className="text-2xl font-bold text-gray-900">Profile</Text>

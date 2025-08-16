@@ -3,19 +3,17 @@ import { PillarCard } from "@/components/PillarCard";
 import { useAppStore } from "@/stores/app-store";
 import { useState } from "react";
 import { ScrollView, Text, TouchableOpacity, View } from "react-native";
-import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 export default function PillarsScreen(): React.JSX.Element {
   const { pillars, loading } = useAppStore();
   const [showCreateModal, setShowCreateModal] = useState(false);
-  const insets = useSafeAreaInsets();
 
   const handleCreatePillar = (): void => {
     setShowCreateModal(true);
   };
 
   return (
-    <View className="flex-1 bg-gray-50" style={{ paddingTop: insets.top }}>
+    <View className="flex-1 bg-gray-50" style={{ paddingTop: 50 }}>
       {/* Header */}
       <View className="bg-white px-6 pt-3 pb-6 border-b border-gray-200">
         <View className="flex-row items-center justify-between">

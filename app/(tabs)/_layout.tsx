@@ -1,13 +1,11 @@
 import { Tabs } from "expo-router";
 import React from "react";
 import { Text } from "react-native";
-import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 import { useColorScheme } from "@/hooks/useColorScheme";
 
 export default function TabLayout() {
   const colorScheme = useColorScheme();
-  const insets = useSafeAreaInsets();
 
   return (
     <Tabs
@@ -18,8 +16,8 @@ export default function TabLayout() {
           backgroundColor: "white",
           borderTopWidth: 1,
           borderTopColor: "#e5e7eb",
-          height: 60 + insets.bottom,
-          paddingBottom: insets.bottom + 8,
+          height: 80,
+          paddingBottom: 20,
           paddingTop: 8,
         },
       }}
