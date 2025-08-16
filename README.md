@@ -1,50 +1,130 @@
-# Welcome to your Expo app 👋
+# 🚀 Commit Life - Habit Tracking App
 
-This is an [Expo](https://expo.dev) project created with [`create-expo-app`](https://www.npmjs.com/package/create-expo-app).
+A GitHub-style habit tracking mobile app built with React Native, Expo, and Supabase. Track your daily actions across life pillars and visualize your progress with beautiful heatmaps.
 
-## Get started
+## 🎯 Features
 
-1. Install dependencies
+- **Life Pillars**: Organize habits into meaningful categories (Health, Career, Spiritual, etc.)
+- **Daily Commits**: Log actions and build streaks like GitHub contributions
+- **GitHub-style Heatmap**: Visualize your commitment journey
+- **Progress Tracking**: Monthly summaries and streak tracking
+- **Beautiful UI**: Modern design with Tailwind RN styling
+- **Cross-platform**: iOS and Android support
+
+## 🏗️ Tech Stack
+
+- **Frontend**: React Native with Expo
+- **UI**: NativeWind (Tailwind for React Native)
+- **State Management**: Zustand
+- **Backend**: Supabase (Database, Auth, API)
+- **Navigation**: Expo Router
+- **TypeScript**: Full type safety
+
+## 🚀 Quick Start
+
+1. **Install dependencies**
 
    ```bash
    npm install
    ```
 
-2. Start the app
+2. **Set up environment variables**
+
+   ```bash
+   cp .env.example .env
+   # Edit .env with your Supabase credentials
+   ```
+
+3. **Start the development server**
 
    ```bash
    npx expo start
    ```
 
-In the output, you'll find options to open the app in a
+4. **Open the app**
+   - Press `i` for iOS simulator
+   - Press `a` for Android emulator
+   - Scan QR code with Expo Go app for physical device
 
-- [development build](https://docs.expo.dev/develop/development-builds/introduction/)
-- [Android emulator](https://docs.expo.dev/workflow/android-studio-emulator/)
-- [iOS simulator](https://docs.expo.dev/workflow/ios-simulator/)
-- [Expo Go](https://expo.dev/go), a limited sandbox for trying out app development with Expo
+## 📱 App Structure
 
-You can start developing by editing the files inside the **app** directory. This project uses [file-based routing](https://docs.expo.dev/router/introduction).
-
-## Get a fresh project
-
-When you're ready, run:
-
-```bash
-npm run reset-project
+```
+app/
+├── (auth)/              # Authentication screens
+│   ├── login.tsx
+│   └── signup.tsx
+├── (tabs)/              # Main app tabs
+│   ├── index.tsx        # Dashboard
+│   ├── pillars.tsx      # Pillars management
+│   ├── heatmap.tsx      # Progress visualization
+│   └── profile.tsx      # User profile
+components/              # Reusable UI components
+├── CommitHeatmap.tsx    # GitHub-style heatmap
+├── PillarCard.tsx       # Pillar display component
+├── AuthGuard.tsx        # Route protection
+└── ...
+stores/                  # Zustand state management
+├── auth-store.ts        # Authentication state
+└── app-store.ts         # App data state
+lib/                     # Utilities and types
+├── types.ts             # TypeScript definitions
+├── supabase.ts          # Supabase client
+├── api.ts               # API functions
+└── sample-data.ts       # Development data
 ```
 
-This command will move the starter code to the **app-example** directory and create a blank **app** directory where you can start developing.
+## 🗄️ Database Schema
 
-## Learn more
+The app uses Supabase with the following main tables:
 
-To learn more about developing your project with Expo, look at the following resources:
+- **users**: User accounts and profiles
+- **pillars**: Life areas/categories for habits
+- **habits**: Individual habits within pillars
+- **actions**: Daily commits/logs for habits
+- **summaries**: Monthly aggregated statistics
 
-- [Expo documentation](https://docs.expo.dev/): Learn fundamentals, or go into advanced topics with our [guides](https://docs.expo.dev/guides).
-- [Learn Expo tutorial](https://docs.expo.dev/tutorial/introduction/): Follow a step-by-step tutorial where you'll create a project that runs on Android, iOS, and the web.
+## 🔧 Development
 
-## Join the community
+### Sample Data
 
-Join our community of developers creating universal apps.
+The app includes sample data for development. It automatically loads when you first open the app.
 
-- [Expo on GitHub](https://github.com/expo/expo): View our open source platform and contribute.
-- [Discord community](https://chat.expo.dev): Chat with Expo users and ask questions.
+### Supabase Setup
+
+1. Create a new Supabase project
+2. Run the SQL migrations in `supabase/migrations/` (to be created)
+3. Update your `.env` file with the project URL and anon key
+
+### Building for Production
+
+```bash
+# Build for iOS
+npx expo build:ios
+
+# Build for Android
+npx expo build:android
+```
+
+## 🎨 Design Philosophy
+
+- **GitHub-inspired**: Familiar contribution visualization
+- **Life-focused**: Organized around life pillars rather than arbitrary categories
+- **Motivational**: Streaks and visual progress encourage consistency
+- **Clean & Modern**: Minimalist design that doesn't distract from the goal
+
+## 📊 Coming Soon
+
+- [ ] Supabase database integration
+- [ ] Real-time sync
+- [ ] Push notifications
+- [ ] Export/sharing features
+- [ ] Advanced analytics
+- [ ] Team/family sharing
+
+## 🤝 Contributing
+
+This is a personal project, but suggestions and feedback are welcome!
+
+---
+
+Built with ❤️ for better habits and a more intentional life.
