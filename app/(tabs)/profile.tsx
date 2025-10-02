@@ -14,6 +14,10 @@ export default function ProfileScreen(): React.JSX.Element {
         onPress: async () => {
           try {
             await signOut();
+            Alert.alert(
+              "Success! 👋",
+              "You've been logged out successfully. See you next time!"
+            );
           } catch (error: any) {
             Alert.alert("Error", error.message || "Failed to sign out");
           }
@@ -59,45 +63,67 @@ export default function ProfileScreen(): React.JSX.Element {
 
         {/* Menu Items */}
         <View className="bg-white mx-6 mt-4 rounded-xl border border-gray-200 overflow-hidden">
-          <TouchableOpacity className="flex-row items-center justify-between p-4 border-b border-gray-100">
+          {/* Export Data - Not implemented */}
+          <View className="flex-row items-center justify-between p-4 border-b border-gray-100 opacity-50">
             <View className="flex-row items-center">
-              <Text className="text-lg mr-3">📊</Text>
-              <Text className="text-gray-900 font-medium">Export Data</Text>
+              <Text className="text-lg mr-3 opacity-50">📊</Text>
+              <View>
+                <Text className="text-gray-400 font-medium">Export Data</Text>
+                <Text className="text-xs text-gray-400">Coming Soon</Text>
+              </View>
             </View>
-            <Text className="text-gray-400">›</Text>
-          </TouchableOpacity>
+            <Text className="text-gray-300">›</Text>
+          </View>
 
-          <TouchableOpacity className="flex-row items-center justify-between p-4 border-b border-gray-100">
+          {/* Notifications - Not implemented */}
+          <View className="flex-row items-center justify-between p-4 border-b border-gray-100 opacity-50">
             <View className="flex-row items-center">
-              <Text className="text-lg mr-3">🔔</Text>
-              <Text className="text-gray-900 font-medium">Notifications</Text>
+              <Text className="text-lg mr-3 opacity-50">🔔</Text>
+              <View>
+                <Text className="text-gray-400 font-medium">Notifications</Text>
+                <Text className="text-xs text-gray-400">Coming Soon</Text>
+              </View>
             </View>
-            <Text className="text-gray-400">›</Text>
-          </TouchableOpacity>
+            <Text className="text-gray-300">›</Text>
+          </View>
 
-          <TouchableOpacity className="flex-row items-center justify-between p-4 border-b border-gray-100">
+          {/* Themes - Not implemented */}
+          <View className="flex-row items-center justify-between p-4 border-b border-gray-100 opacity-50">
             <View className="flex-row items-center">
-              <Text className="text-lg mr-3">🎨</Text>
-              <Text className="text-gray-900 font-medium">Themes</Text>
+              <Text className="text-lg mr-3 opacity-50">🎨</Text>
+              <View>
+                <Text className="text-gray-400 font-medium">Themes</Text>
+                <Text className="text-xs text-gray-400">Coming Soon</Text>
+              </View>
             </View>
-            <Text className="text-gray-400">›</Text>
-          </TouchableOpacity>
+            <Text className="text-gray-300">›</Text>
+          </View>
 
-          <TouchableOpacity className="flex-row items-center justify-between p-4 border-b border-gray-100">
+          {/* Help & Support - Not implemented */}
+          <View className="flex-row items-center justify-between p-4 border-b border-gray-100 opacity-50">
             <View className="flex-row items-center">
-              <Text className="text-lg mr-3">❓</Text>
-              <Text className="text-gray-900 font-medium">Help & Support</Text>
+              <Text className="text-lg mr-3 opacity-50">❓</Text>
+              <View>
+                <Text className="text-gray-400 font-medium">
+                  Help & Support
+                </Text>
+                <Text className="text-xs text-gray-400">Coming Soon</Text>
+              </View>
             </View>
-            <Text className="text-gray-400">›</Text>
-          </TouchableOpacity>
+            <Text className="text-gray-300">›</Text>
+          </View>
 
-          <TouchableOpacity className="flex-row items-center justify-between p-4">
+          {/* About - Not implemented */}
+          <View className="flex-row items-center justify-between p-4 opacity-50">
             <View className="flex-row items-center">
-              <Text className="text-lg mr-3">ℹ️</Text>
-              <Text className="text-gray-900 font-medium">About</Text>
+              <Text className="text-lg mr-3 opacity-50">ℹ️</Text>
+              <View>
+                <Text className="text-gray-400 font-medium">About</Text>
+                <Text className="text-xs text-gray-400">Coming Soon</Text>
+              </View>
             </View>
-            <Text className="text-gray-400">›</Text>
-          </TouchableOpacity>
+            <Text className="text-gray-300">›</Text>
+          </View>
         </View>
 
         {/* Sign Out */}

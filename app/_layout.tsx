@@ -12,13 +12,11 @@ import "../global.css";
 
 import { AuthGuard } from "@/components/AuthGuard";
 import { useColorScheme } from "@/hooks/useColorScheme";
-import { useAppStore } from "@/stores/app-store";
 import { useAuthStore } from "@/stores/auth-store";
 
 export default function RootLayout() {
   const colorScheme = useColorScheme();
   const initialize = useAuthStore((state) => state.initialize);
-  const loadSampleData = useAppStore((state) => state.loadSampleData);
 
   const [loaded] = useFonts({
     SpaceMono: require("../assets/fonts/SpaceMono-Regular.ttf"),
@@ -26,8 +24,7 @@ export default function RootLayout() {
 
   useEffect(() => {
     initialize();
-    loadSampleData();
-  }, [initialize, loadSampleData]);
+  }, [initialize]);
 
   if (!loaded) {
     // Async font loading only occurs in development.

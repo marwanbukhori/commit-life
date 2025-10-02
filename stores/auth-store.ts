@@ -10,6 +10,7 @@ interface AuthState {
   signIn: (email: string, password: string) => Promise<void>;
   signUp: (email: string, password: string, name: string) => Promise<void>;
   signOut: () => Promise<void>;
+  resendVerification: (email: string) => Promise<void>;
   initialize: () => Promise<void>;
 }
 
@@ -48,7 +49,9 @@ export const useAuthStore = create<AuthState>((set, get) => ({
         email,
         password,
         options: {
-          data: { name },
+          data: {
+            full_name: name,
+          },
         },
       });
 
@@ -76,6 +79,14 @@ export const useAuthStore = create<AuthState>((set, get) => ({
       isAuthenticated: false,
       loading: false,
     });
+  },
+
+  resendVerification: async (email: string) => {
+    const { error } = await supabase.auth.resend({
+      type: "signup",
+      email: email,
+    });
+    if (error) throw error;
   },
 
   initialize: async () => {

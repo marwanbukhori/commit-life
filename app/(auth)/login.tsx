@@ -15,7 +15,8 @@ export default function LoginScreen(): React.JSX.Element {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
-  const signIn = useAuthStore((state) => state.signIn);
+  const [showResendButton, setShowResendButton] = useState(false);
+  const { signIn, resendVerification } = useAuthStore();
 
   const handleLogin = async (): Promise<void> => {
     if (!email || !password) {
@@ -26,10 +27,38 @@ export default function LoginScreen(): React.JSX.Element {
     setLoading(true);
     try {
       await signIn(email, password);
+      Alert.alert("Success! 🎉", "Welcome back! You're now logged in.");
     } catch (error: any) {
-      Alert.alert("Login Failed", error.message || "An error occurred");
+      let errorMessage = error.message || "An error occurred";
+
+      // Provide helpful message for common errors
+      if (error.message?.includes("Invalid login credentials")) {
+        setShowResendButton(true);
+        errorMessage =
+          "Account not verified. Check your email or resend verification.";
+      } else if (error.message?.includes("Email not confirmed")) {
+        setShowResendButton(true);
+        errorMessage = "Please verify your email first or resend verification.";
+      }
+
+      Alert.alert("Login Failed", errorMessage);
     } finally {
       setLoading(false);
+    }
+  };
+
+  const handleResendVerification = async (): Promise<void> => {
+    if (!email) {
+      Alert.alert("Error", "Please enter your email first");
+      return;
+    }
+
+    try {
+      await resendVerification(email);
+      Alert.alert("Success", "Verification email sent! Check your inbox.");
+      setShowResendButton(false);
+    } catch (error: any) {
+      Alert.alert("Error", error.message || "Failed to resend verification");
     }
   };
 
@@ -89,6 +118,17 @@ export default function LoginScreen(): React.JSX.Element {
               {loading ? "Signing In..." : "Sign In"}
             </Text>
           </TouchableOpacity>
+
+          {showResendButton && (
+            <TouchableOpacity
+              className="mt-4 rounded-lg py-3 border border-primary-500"
+              onPress={handleResendVerification}
+            >
+              <Text className="text-primary-500 text-center font-semibold text-base">
+                Resend Verification Email
+              </Text>
+            </TouchableOpacity>
+          )}
         </View>
 
         <View className="mt-6 flex-row justify-center">

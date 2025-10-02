@@ -1,7 +1,14 @@
 import { CommitHeatmap } from "@/components/CommitHeatmap";
+import { actionsApi } from "@/lib/api";
 import { useAppStore } from "@/stores/app-store";
 import React, { useEffect, useState } from "react";
-import { ScrollView, Text, TouchableOpacity, View } from "react-native";
+import {
+  ActivityIndicator,
+  ScrollView,
+  Text,
+  TouchableOpacity,
+  View,
+} from "react-native";
 
 export default function HeatmapScreen(): React.JSX.Element {
   const [selectedPillar, setSelectedPillar] = useState<string | null>(null);
@@ -9,6 +16,51 @@ export default function HeatmapScreen(): React.JSX.Element {
     "year"
   );
   const [isReady, setIsReady] = useState(false);
+  const [summaryStats, setSummaryStats] = useState({
+    totalCommits: 0,
+    currentStreak: 0,
+    bestStreak: 0,
+    loading: true,
+  });
+
+  // Load summary statistics
+  const loadSummaryStats = async () => {
+    try {
+      setSummaryStats((prev) => ({ ...prev, loading: true }));
+
+      const now = new Date();
+      const daysToShow = selectedPeriod === "month" ? 30 : 365;
+      const startDate = new Date(now);
+      startDate.setDate(startDate.getDate() - (daysToShow - 1));
+
+      const startDateStr = startDate.toISOString().split("T")[0];
+      const endDateStr = now.toISOString().split("T")[0];
+
+      // Get heatmap data for total commits
+      const heatmapData = await actionsApi.getHeatmapData(
+        startDateStr,
+        endDateStr,
+        selectedPillar || undefined
+      );
+
+      // Get streak data
+      const streakData = await actionsApi.getStreakData(
+        selectedPillar || undefined
+      );
+
+      const totalCommits = heatmapData.reduce((sum, day) => sum + day.count, 0);
+
+      setSummaryStats({
+        totalCommits,
+        currentStreak: streakData.current,
+        bestStreak: streakData.best,
+        loading: false,
+      });
+    } catch (error) {
+      console.error("Error loading summary stats:", error);
+      setSummaryStats((prev) => ({ ...prev, loading: false }));
+    }
+  };
 
   // Safety delay to ensure navigation context is ready
   useEffect(() => {
@@ -17,6 +69,13 @@ export default function HeatmapScreen(): React.JSX.Element {
     }, 100);
     return () => clearTimeout(timer);
   }, []);
+
+  // Load stats when filters change
+  useEffect(() => {
+    if (isReady) {
+      loadSummaryStats();
+    }
+  }, [selectedPillar, selectedPeriod, isReady]);
 
   // Get pillars from store with fallback
   let pillars: any[] = [];
@@ -250,62 +309,87 @@ export default function HeatmapScreen(): React.JSX.Element {
               borderColor: "#e5e7eb",
             }}
           >
-            <View
-              style={{
-                flexDirection: "row",
-                justifyContent: "space-between",
-                alignItems: "center",
-                marginBottom: 16,
-              }}
-            >
-              <View style={{ flex: 1 }}>
-                <Text
-                  style={{ fontSize: 24, fontWeight: "bold", color: "#111827" }}
-                >
-                  127
-                </Text>
-                <Text style={{ fontSize: 14, color: "#6b7280" }}>
-                  Total Commits
+            {summaryStats.loading ? (
+              <View style={{ alignItems: "center", paddingVertical: 20 }}>
+                <ActivityIndicator size="large" color="#3b82f6" />
+                <Text style={{ color: "#6b7280", marginTop: 8 }}>
+                  Loading stats...
                 </Text>
               </View>
-              <View style={{ flex: 1 }}>
-                <Text
-                  style={{ fontSize: 24, fontWeight: "bold", color: "#10b981" }}
+            ) : (
+              <>
+                <View
+                  style={{
+                    flexDirection: "row",
+                    justifyContent: "space-between",
+                    alignItems: "center",
+                    marginBottom: 16,
+                  }}
                 >
-                  15
-                </Text>
-                <Text style={{ fontSize: 14, color: "#6b7280" }}>
-                  Current Streak
-                </Text>
-              </View>
-              <View style={{ flex: 1 }}>
-                <Text
-                  style={{ fontSize: 24, fontWeight: "bold", color: "#3b82f6" }}
+                  <View style={{ flex: 1 }}>
+                    <Text
+                      style={{
+                        fontSize: 24,
+                        fontWeight: "bold",
+                        color: "#111827",
+                      }}
+                    >
+                      {summaryStats.totalCommits}
+                    </Text>
+                    <Text style={{ fontSize: 14, color: "#6b7280" }}>
+                      Total Commits
+                    </Text>
+                  </View>
+                  <View style={{ flex: 1 }}>
+                    <Text
+                      style={{
+                        fontSize: 24,
+                        fontWeight: "bold",
+                        color: "#10b981",
+                      }}
+                    >
+                      {summaryStats.currentStreak}
+                    </Text>
+                    <Text style={{ fontSize: 14, color: "#6b7280" }}>
+                      Current Streak
+                    </Text>
+                  </View>
+                  <View style={{ flex: 1 }}>
+                    <Text
+                      style={{
+                        fontSize: 24,
+                        fontWeight: "bold",
+                        color: "#3b82f6",
+                      }}
+                    >
+                      {summaryStats.bestStreak}
+                    </Text>
+                    <Text style={{ fontSize: 14, color: "#6b7280" }}>
+                      Best Streak
+                    </Text>
+                  </View>
+                </View>
+                <View
+                  style={{
+                    borderTopWidth: 1,
+                    borderTopColor: "#f3f4f6",
+                    paddingTop: 16,
+                  }}
                 >
-                  42
-                </Text>
-                <Text style={{ fontSize: 14, color: "#6b7280" }}>
-                  Best Streak
-                </Text>
-              </View>
-            </View>
-            <View
-              style={{
-                borderTopWidth: 1,
-                borderTopColor: "#f3f4f6",
-                paddingTop: 16,
-              }}
-            >
-              <Text
-                style={{
-                  fontSize: 14,
-                  color: "#6b7280",
-                  textAlign: "center",
-                }}
-              >
-                Keep up the great work! You&apos;re building strong habits. 💪
-              </Text>
-            </View>
+                  <Text
+                    style={{
+                      fontSize: 14,
+                      color: "#6b7280",
+                      textAlign: "center",
+                    }}
+                  >
+                    {summaryStats.currentStreak > 0
+                      ? `Keep up the great work! You're on a ${summaryStats.currentStreak}-day streak! 💪`
+                      : "Start building your habit streak today! 🌱"}
+                  </Text>
+                </View>
+              </>
+            )}
           </View>
         </View>
       </ScrollView>

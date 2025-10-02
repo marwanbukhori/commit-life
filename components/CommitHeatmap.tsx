@@ -1,5 +1,6 @@
-import React from "react";
-import { ScrollView, Text, View } from "react-native";
+import { actionsApi } from "@/lib/api";
+import React, { useEffect, useState } from "react";
+import { ActivityIndicator, ScrollView, Text, View } from "react-native";
 
 interface CommitHeatmapProps {
   pillarId?: string | null;
@@ -16,36 +17,78 @@ export function CommitHeatmap({
   pillarId,
   period,
 }: CommitHeatmapProps): React.JSX.Element {
-  const generateHeatmapData = () => {
-    const days: HeatmapDay[] = [];
+  const [heatmapData, setHeatmapData] = useState<HeatmapDay[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+
+  const generateDateRange = () => {
+    const days: string[] = [];
     const now = new Date();
     const daysToShow = period === "month" ? 30 : 365;
 
     for (let i = daysToShow - 1; i >= 0; i--) {
       const date = new Date(now);
       date.setDate(date.getDate() - i);
-
-      // Generate random commit count (0-10)
-      const count = Math.floor(Math.random() * 11);
-      let level: 0 | 1 | 2 | 3 | 4 = 0;
-
-      if (count === 0) level = 0;
-      else if (count <= 2) level = 1;
-      else if (count <= 4) level = 2;
-      else if (count <= 7) level = 3;
-      else level = 4;
-
-      days.push({
-        date: date.toISOString().split("T")[0],
-        count,
-        level,
-      });
+      days.push(date.toISOString().split("T")[0]);
     }
 
     return days;
   };
 
-  const heatmapData = generateHeatmapData();
+  const loadHeatmapData = async () => {
+    try {
+      setLoading(true);
+      setError(null);
+
+      const now = new Date();
+      const daysToShow = period === "month" ? 30 : 365;
+      const startDate = new Date(now);
+      startDate.setDate(startDate.getDate() - (daysToShow - 1));
+
+      const startDateStr = startDate.toISOString().split("T")[0];
+      const endDateStr = now.toISOString().split("T")[0];
+
+      // Get data from API
+      const apiData = await actionsApi.getHeatmapData(
+        startDateStr,
+        endDateStr,
+        pillarId || undefined
+      );
+
+      // Create a map for quick lookup
+      const dataMap = new Map(apiData.map((item) => [item.date, item.count]));
+
+      // Generate all dates and fill with data
+      const allDates = generateDateRange();
+      const processedData: HeatmapDay[] = allDates.map((date) => {
+        const count = dataMap.get(date) || 0;
+        let level: 0 | 1 | 2 | 3 | 4 = 0;
+
+        if (count === 0) level = 0;
+        else if (count <= 2) level = 1;
+        else if (count <= 4) level = 2;
+        else if (count <= 7) level = 3;
+        else level = 4;
+
+        return {
+          date,
+          count,
+          level,
+        };
+      });
+
+      setHeatmapData(processedData);
+    } catch (err) {
+      console.error("Error loading heatmap data:", err);
+      setError("Failed to load heatmap data");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    loadHeatmapData();
+  }, [pillarId, period]);
 
   const getCellColor = (level: number): string => {
     const colors = [
@@ -81,6 +124,30 @@ export function CommitHeatmap({
 
     return weeks;
   };
+
+  if (loading) {
+    return (
+      <View className="bg-white rounded-xl p-6 border border-gray-200">
+        <View className="items-center justify-center py-8">
+          <ActivityIndicator size="large" color="#3b82f6" />
+          <Text className="text-gray-600 mt-2">Loading heatmap data...</Text>
+        </View>
+      </View>
+    );
+  }
+
+  if (error) {
+    return (
+      <View className="bg-white rounded-xl p-6 border border-gray-200">
+        <View className="items-center justify-center py-8">
+          <Text className="text-red-500 text-center">{error}</Text>
+          <Text className="text-gray-500 text-sm mt-1">
+            Pull to refresh to try again
+          </Text>
+        </View>
+      </View>
+    );
+  }
 
   const weeks = groupDataByWeeks(heatmapData);
   const totalCommits = heatmapData.reduce((sum, day) => sum + day.count, 0);

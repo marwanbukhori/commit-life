@@ -1,4 +1,3 @@
-import { Action } from "@/lib/types";
 import { useAppStore } from "@/stores/app-store";
 import { useAuthStore } from "@/stores/auth-store";
 import React, { useState } from "react";
@@ -23,8 +22,6 @@ function HabitItem({
   const [isCommitting, setIsCommitting] = useState(false);
 
   const handleCommit = async (): Promise<void> => {
-    if (isCompleted) return;
-
     setIsCommitting(true);
     try {
       await onCommit();
@@ -32,7 +29,10 @@ function HabitItem({
       setTimeout(() => setIsCommitting(false), 500);
     } catch (error) {
       setIsCommitting(false);
-      Alert.alert("Error", "Failed to commit habit");
+      Alert.alert(
+        "Error",
+        isCompleted ? "Failed to untick habit" : "Failed to commit habit"
+      );
     }
   };
 
@@ -63,12 +63,12 @@ function HabitItem({
             : "bg-gray-200"
         }`}
         onPress={handleCommit}
-        disabled={isCompleted || isCommitting}
+        disabled={isCommitting}
       >
-        {isCompleted ? (
-          <Text className="text-white text-lg font-bold">✓</Text>
-        ) : isCommitting ? (
+        {isCommitting ? (
           <Text className="text-white text-sm">⟳</Text>
+        ) : isCompleted ? (
+          <Text className="text-white text-lg font-bold">✓</Text>
         ) : (
           <Text className="text-gray-500 text-lg">+</Text>
         )}
@@ -78,9 +78,14 @@ function HabitItem({
 }
 
 export function TodaysHabits(): React.JSX.Element {
-  const { pillars, todayActions, addAction } = useAppStore();
+  const { pillars, todayActions, addAction, removeAction } = useAppStore();
   const { user } = useAuthStore();
   const [showModal, setShowModal] = useState(false);
+
+  // Debug logging
+  console.log("TodaysHabits - pillars:", pillars.length);
+  console.log("TodaysHabits - todayActions:", todayActions.length);
+  console.log("TodaysHabits - user:", user?.email || "not authenticated");
 
   // Get all habits from all pillars
   const allHabits = pillars.flatMap((pillar) =>
@@ -96,23 +101,39 @@ export function TodaysHabits(): React.JSX.Element {
     return todayActions.some((action) => action.habit_id === habitId);
   };
 
-  const handleCommitHabit = async (habitId: string): Promise<void> => {
-    // For development without auth, use a dummy user ID
-    const userId = user?.id || "dev_user_id";
+  const handleToggleHabit = async (habitId: string): Promise<void> => {
+    const today = new Date().toISOString().split("T")[0];
+    const isCompleted = getHabitCompletionStatus(habitId);
 
-    const newAction: Omit<Action, "id" | "created_at"> = {
-      habit_id: habitId,
-      user_id: userId,
-      date: new Date().toISOString(),
-      client_action_id: `action_${Date.now()}_${Math.random()}`,
-    };
+    console.log(
+      "Toggle habit:",
+      habitId,
+      "isCompleted:",
+      isCompleted,
+      "date:",
+      today
+    );
 
-    // Add to store (in real app, this would call API)
-    addAction({
-      ...newAction,
-      id: `action_${Date.now()}`,
-      created_at: new Date().toISOString(),
-    });
+    try {
+      if (isCompleted) {
+        // Remove the action (untick)
+        console.log("Removing action for habit:", habitId);
+        await removeAction(habitId, today);
+        console.log("Action removed successfully");
+      } else {
+        // Add the action (tick)
+        console.log("Adding action for habit:", habitId);
+        await addAction({
+          habit_id: habitId,
+          date: today,
+          client_action_id: `action_${Date.now()}_${Math.random()}`,
+        });
+        console.log("Action added successfully");
+      }
+    } catch (error) {
+      console.error("Error toggling habit:", error);
+      // Could show an error message to user here
+    }
   };
 
   const completedCount = allHabits.filter((habit) =>
@@ -168,18 +189,34 @@ export function TodaysHabits(): React.JSX.Element {
         />
       </View>
 
-      {/* Habits List - Show only 3 unfinished habits */}
+      {/* Habits List - Show unfinished habits + recent completed ones */}
       <View>
-        {unfinishedHabits.map((habit) => (
+        {/* Show up to 3 unfinished habits */}
+        {unfinishedHabits.slice(0, 3).map((habit) => (
           <HabitItem
             key={habit.id}
             habit={habit}
             pillarName={habit.pillarName}
             pillarIcon={habit.pillarIcon}
             isCompleted={getHabitCompletionStatus(habit.id)}
-            onCommit={() => handleCommitHabit(habit.id)}
+            onCommit={() => handleToggleHabit(habit.id)}
           />
         ))}
+
+        {/* Show completed habits from today */}
+        {allHabits
+          .filter((habit) => getHabitCompletionStatus(habit.id))
+          .slice(0, 2)
+          .map((habit) => (
+            <HabitItem
+              key={habit.id}
+              habit={habit}
+              pillarName={habit.pillarName}
+              pillarIcon={habit.pillarIcon}
+              isCompleted={getHabitCompletionStatus(habit.id)}
+              onCommit={() => handleToggleHabit(habit.id)}
+            />
+          ))}
 
         {/* See More Button */}
         {(totalUnfinishedCount > 3 || completedCount > 0) && (

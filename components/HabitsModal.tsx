@@ -1,4 +1,3 @@
-import { Action } from "@/lib/types";
 import { useAppStore } from "@/stores/app-store";
 import { useAuthStore } from "@/stores/auth-store";
 import React, { useState } from "react";
@@ -29,8 +28,6 @@ function HabitItem({
   const [isCommitting, setIsCommitting] = useState(false);
 
   const handleCommit = async (): Promise<void> => {
-    if (isCompleted) return;
-
     setIsCommitting(true);
     try {
       await onCommit();
@@ -67,7 +64,7 @@ function HabitItem({
             : "bg-gray-200"
         }`}
         onPress={handleCommit}
-        disabled={isCompleted || isCommitting}
+        disabled={isCommitting}
       >
         {isCompleted ? (
           <Text className="text-white text-lg font-bold">✓</Text>
@@ -90,7 +87,7 @@ export function HabitsModal({
   visible,
   onClose,
 }: HabitsModalProps): React.JSX.Element {
-  const { pillars, todayActions, addAction } = useAppStore();
+  const { pillars, todayActions, addAction, removeAction } = useAppStore();
   const { user } = useAuthStore();
   const [selectedFilter, setSelectedFilter] = useState<string>("all");
   const [searchQuery, setSearchQuery] = useState("");
@@ -126,21 +123,26 @@ export function HabitsModal({
     return matchesFilter && matchesSearch;
   });
 
-  const handleCommitHabit = async (habitId: string): Promise<void> => {
-    if (!user) return;
+  const handleToggleHabit = async (habitId: string): Promise<void> => {
+    const today = new Date().toISOString().split("T")[0];
+    const isCompleted = getHabitCompletionStatus(habitId);
 
-    const newAction: Omit<Action, "id" | "created_at"> = {
-      habit_id: habitId,
-      user_id: user.id,
-      date: new Date().toISOString(),
-      client_action_id: `action_${Date.now()}_${Math.random()}`,
-    };
-
-    addAction({
-      ...newAction,
-      id: `action_${Date.now()}`,
-      created_at: new Date().toISOString(),
-    });
+    try {
+      if (isCompleted) {
+        // Remove the action (untick)
+        await removeAction(habitId, today);
+      } else {
+        // Add the action (tick)
+        await addAction({
+          habit_id: habitId,
+          date: today,
+          client_action_id: `action_${Date.now()}_${Math.random()}`,
+        });
+      }
+    } catch (error) {
+      console.error("Error toggling habit:", error);
+      // Could show an error message to user here
+    }
   };
 
   const completedCount = allHabits.filter((habit) =>
@@ -269,7 +271,7 @@ export function HabitsModal({
                   pillarName={habit.pillarName}
                   pillarIcon={habit.pillarIcon}
                   isCompleted={getHabitCompletionStatus(habit.id)}
-                  onCommit={() => handleCommitHabit(habit.id)}
+                  onCommit={() => handleToggleHabit(habit.id)}
                 />
               ))}
             </View>

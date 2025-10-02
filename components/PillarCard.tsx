@@ -1,13 +1,23 @@
 import { PillarWithHabits } from "@/lib/types";
+import { useAppStore } from "@/stores/app-store";
+import React, { useState } from "react";
 import { Text, TouchableOpacity, View } from "react-native";
+import { CreateHabitModal } from "./CreateHabitModal";
 
 interface PillarCardProps {
   pillar: PillarWithHabits;
 }
 
-export function PillarCard({ pillar }: PillarCardProps): JSX.Element {
+export function PillarCard({ pillar }: PillarCardProps): React.JSX.Element {
+  const [showCreateHabitModal, setShowCreateHabitModal] = useState(false);
+  const { todayActions } = useAppStore();
+
   const habitCount = pillar.habits.length;
-  const todayCompleted = Math.floor(Math.random() * habitCount); // TODO: Calculate real completion
+
+  // Calculate real completion based on today's actions
+  const todayCompleted = pillar.habits.filter((habit) =>
+    todayActions.some((action) => action.habit_id === habit.id)
+  ).length;
 
   return (
     <TouchableOpacity className="bg-white rounded-xl p-6 border border-gray-200">
@@ -33,7 +43,7 @@ export function PillarCard({ pillar }: PillarCardProps): JSX.Element {
       {/* Progress */}
       <View className="mb-4">
         <View className="flex-row items-center justify-between mb-2">
-          <Text className="text-sm text-gray-600">Today's Progress</Text>
+          <Text className="text-sm text-gray-600">Today&apos;s Progress</Text>
           <Text className="text-sm font-medium text-gray-900">
             {todayCompleted}/{habitCount}
           </Text>
@@ -54,38 +64,63 @@ export function PillarCard({ pillar }: PillarCardProps): JSX.Element {
       {/* Habits List */}
       {pillar.habits.length > 0 ? (
         <View className="space-y-2">
-          {pillar.habits.slice(0, 3).map((habit, index) => (
-            <View key={habit.id} className="flex-row items-center">
-              <View
-                className={`w-4 h-4 rounded-full mr-3 ${
-                  index < todayCompleted ? "bg-success-500" : "bg-gray-200"
-                }`}
-              >
-                {index < todayCompleted && (
-                  <Text className="text-white text-xs text-center leading-4">
-                    ✓
-                  </Text>
-                )}
+          {pillar.habits.slice(0, 3).map((habit) => {
+            const isCompleted = todayActions.some(
+              (action) => action.habit_id === habit.id
+            );
+            return (
+              <View key={habit.id} className="flex-row items-center">
+                <View
+                  className={`w-4 h-4 rounded-full mr-3 ${
+                    isCompleted ? "bg-success-500" : "bg-gray-200"
+                  }`}
+                >
+                  {isCompleted && (
+                    <Text className="text-white text-xs text-center leading-4">
+                      ✓
+                    </Text>
+                  )}
+                </View>
+                <Text className="text-sm text-gray-700 flex-1">
+                  {habit.name}
+                </Text>
               </View>
-              <Text className="text-sm text-gray-700 flex-1">{habit.name}</Text>
-            </View>
-          ))}
+            );
+          })}
           {pillar.habits.length > 3 && (
             <Text className="text-xs text-gray-500 ml-7">
               +{pillar.habits.length - 3} more habits
             </Text>
           )}
+          <TouchableOpacity
+            className="mt-3 py-2 px-3 bg-primary-50 rounded-lg"
+            onPress={() => setShowCreateHabitModal(true)}
+          >
+            <Text className="text-primary-600 text-sm font-medium text-center">
+              + Add Habit
+            </Text>
+          </TouchableOpacity>
         </View>
       ) : (
         <View className="items-center py-4">
           <Text className="text-gray-500 text-sm">No habits yet</Text>
-          <TouchableOpacity className="mt-2">
+          <TouchableOpacity
+            className="mt-2"
+            onPress={() => setShowCreateHabitModal(true)}
+          >
             <Text className="text-primary-500 text-sm font-medium">
               Add your first habit
             </Text>
           </TouchableOpacity>
         </View>
       )}
+
+      <CreateHabitModal
+        visible={showCreateHabitModal}
+        onClose={() => setShowCreateHabitModal(false)}
+        pillarId={pillar.id}
+        pillarName={pillar.name}
+      />
     </TouchableOpacity>
   );
 }

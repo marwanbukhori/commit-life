@@ -1,28 +1,58 @@
-import { QuickActionCard } from "@/components/QuickActionCard";
 import { StreakCard } from "@/components/StreakCard";
 import { TodayProgress } from "@/components/TodayProgress";
 import { TodaysHabits } from "@/components/TodaysHabits";
+import { actionsApi } from "@/lib/api";
 import { useAppStore } from "@/stores/app-store";
 import { useAuthStore } from "@/stores/auth-store";
-import React, { useEffect, useState } from "react";
+import React, { useCallback, useEffect, useState } from "react";
 import { RefreshControl, ScrollView, Text, View } from "react-native";
 
 export default function DashboardScreen(): React.JSX.Element {
   const { user } = useAuthStore();
-  const { pillars, todayActions, loading, loadSampleData } = useAppStore();
+  const { pillars, todayActions, refreshData } = useAppStore();
   const [refreshing, setRefreshing] = useState(false);
+  const [streakData, setStreakData] = useState<{
+    [pillarId: string]: { current: number; best: number };
+  }>({});
 
-  // Load sample data on first render for development
-  useEffect(() => {
-    if (pillars.length === 0) {
-      loadSampleData();
+  // Load streak data for all pillars
+  const loadStreakData = useCallback(async (): Promise<void> => {
+    try {
+      const streaks: { [pillarId: string]: { current: number; best: number } } =
+        {};
+
+      // Load overall streak data
+      const overallStreak = await actionsApi.getStreakData();
+      streaks["overall"] = overallStreak;
+
+      // Load streak data for each pillar
+      for (const pillar of pillars) {
+        const pillarStreak = await actionsApi.getStreakData(pillar.id);
+        streaks[pillar.id] = pillarStreak;
+      }
+
+      setStreakData(streaks);
+    } catch (error) {
+      console.error("Error loading streak data:", error);
     }
-  }, [pillars.length, loadSampleData]);
+  }, [pillars]);
+
+  // Load streak data when pillars change
+  useEffect(() => {
+    if (pillars.length > 0) {
+      loadStreakData();
+    }
+  }, [pillars, loadStreakData]);
 
   const onRefresh = async (): Promise<void> => {
     setRefreshing(true);
-    // TODO: Implement data refresh
-    setTimeout(() => setRefreshing(false), 1000);
+    try {
+      await refreshData();
+      await loadStreakData();
+    } catch (error) {
+      console.error("Error refreshing data:", error);
+    }
+    setRefreshing(false);
   };
 
   const getGreeting = (): string => {
@@ -66,7 +96,7 @@ export default function DashboardScreen(): React.JSX.Element {
         </View>
 
         {/* Quick Actions */}
-        <View className="px-6 py-2">
+        {/* <View className="px-6 py-2">
           <Text className="text-lg font-semibold text-gray-900 mb-4">
             Quick Actions
           </Text>
@@ -77,7 +107,7 @@ export default function DashboardScreen(): React.JSX.Element {
                 subtitle="Start organizing your habits"
                 icon="plus"
                 onPress={() => {
-                  /* Navigate to create pillar */
+                  /* Navigate to create pillar
                 }}
               />
             ) : (
@@ -88,13 +118,13 @@ export default function DashboardScreen(): React.JSX.Element {
                   subtitle="Make a commit today"
                   icon={pillar.icon}
                   onPress={() => {
-                    /* Navigate to log action */
+                    /* Navigate to log action
                   }}
                 />
               ))
             )}
           </View>
-        </View>
+        </View> */}
 
         {/* Streak Cards */}
         <View className="px-6 py-4">
@@ -110,7 +140,7 @@ export default function DashboardScreen(): React.JSX.Element {
               <StreakCard
                 key={pillar.id}
                 pillar={pillar}
-                streak={Math.floor(Math.random() * 30)} // TODO: Calculate real streak
+                streak={streakData[pillar.id]?.current || 0}
               />
             ))}
             {pillars.length === 0 && (

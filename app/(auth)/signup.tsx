@@ -38,6 +38,10 @@ export default function SignUpScreen(): React.JSX.Element {
     setLoading(true);
     try {
       await signUp(email, password, name);
+      Alert.alert(
+        "Success! 🎉",
+        "Account created successfully! Please check your email to verify your account."
+      );
     } catch (error: any) {
       Alert.alert("Sign Up Failed", error.message || "An error occurred");
     } finally {

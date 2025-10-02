@@ -60,16 +60,12 @@ export function CreatePillarModal({
 
     setLoading(true);
     try {
-      // TODO: Call Supabase API to create pillar
-      const newPillar = {
-        id: `pillar_${Date.now()}`, // Temporary ID
-        user_id: "user_id", // TODO: Get from auth
+      await addPillar({
         name: name.trim(),
         icon: selectedIcon,
-        created_at: new Date().toISOString(),
-      };
-
-      addPillar(newPillar);
+        description: "", // Add description field later if needed
+        color: "#3b82f6", // Default color
+      });
 
       // Reset form
       setName("");
