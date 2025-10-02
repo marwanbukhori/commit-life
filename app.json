@@ -35,8 +35,21 @@
         }
       ]
     ],
+    "runtimeVersion": {
+      "policy": "sdkVersion"
+    },
     "experiments": {
       "typedRoutes": true
+    },
+    "extra": {
+      "router": {},
+      "eas": {
+        "projectId": "a4c3059b-5094-4091-a394-0c14ad4bc1ab"
+      }
+    },
+    "owner": "marwanbukhori",
+    "updates": {
+      "url": "https://u.expo.dev/a4c3059b-5094-4091-a394-0c14ad4bc1ab"
     }
   }
 }
