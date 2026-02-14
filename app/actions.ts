@@ -472,15 +472,13 @@ export async function getAnalyticsData(pillarId: string, timeZone: string = 'UTC
     if (!session?.user) throw new Error("Unauthorized");
 
     // Check Premium
-    // @ts-ignore
-    if (!session.user.isPremium) {
+    if (!(session.user as any).isPremium) {
         throw new Error("Analytics is a Premium feature.");
     }
 
     // Verify Access
-    // @ts-ignore
     const pillar = await prisma.pillar.findUnique({
-        where: { id: pillarId, userId: session.user.id }
+        where: { id: pillarId, userId: (session.user as any).id }
     });
     if (!pillar) throw new Error("Garden not found.");
 
