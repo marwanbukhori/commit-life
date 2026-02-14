@@ -1,4 +1,4 @@
-# System Design: Commit Life Architecture v1.0
+# System Design: Commit Garden Architecture v1.0
 
 > **Role**: Staff Engineer (Scalability & Optimization Focus)
 > **Goal**: Design a performant, cost-effective, and scalable system for a gamified habit tracker deployed on a single DigitalOcean Droplet via Docker.

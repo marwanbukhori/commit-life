@@ -62,7 +62,7 @@ export function LandingPage() {
             <section className="relative z-10 bg-amber-950/80 border-t-8 border-amber-900 py-20 backdrop-blur-sm">
                 <div className="container mx-auto px-4">
                     <div className="text-center mb-16">
-                        <h2 className="text-3xl font-bold uppercase tracking-widest mb-4 text-amber-200">Why CommitLife?</h2>
+                        <h2 className="text-3xl font-bold uppercase tracking-widest mb-4 text-amber-200">Why CommitGarden?</h2>
                         <div className="w-24 h-1 bg-green-500 mx-auto rounded-full" />
                     </div>
 
@@ -151,7 +151,7 @@ export function LandingPage() {
             {/* Footer */}
             <footer className="relative z-10 bg-black/80 py-8 border-t border-white/10 text-center text-xs text-amber-500/40 uppercase tracking-widest">
                 <div className="container mx-auto">
-                    <p>&copy; 2025 CommitLife. All rights reserved.</p>
+                    <p>&copy; 2025 CommitGarden. All rights reserved.</p>
                     <div className="flex justify-center gap-4 mt-4">
                         <Link href="#" className="hover:text-amber-400 transition-colors">Terms</Link>
                         <Link href="#" className="hover:text-amber-400 transition-colors">Privacy</Link>

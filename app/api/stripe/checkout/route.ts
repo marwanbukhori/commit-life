@@ -22,7 +22,7 @@ export async function POST(req: Request) {
 
         // Define pricing
         const priceAmount = plan === 'annually' ? 4999 : 499; // in cents
-        const productName = plan === 'annually' ? 'CommitLife Premium (1 Year)' : 'CommitLife Premium (1 Month)';
+        const productName = plan === 'annually' ? 'CommitGarden Premium (1 Year)' : 'CommitGarden Premium (1 Month)';
 
         // For local dev, fallback to localhost:3000
         const appUrl = process.env.NEXT_PUBLIC_APP_URL || "http://localhost:3000";

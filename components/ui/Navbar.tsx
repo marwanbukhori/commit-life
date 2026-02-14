@@ -31,7 +31,7 @@ export function Navbar() {
                         <Sprout className="w-6 h-6 text-green-400" />
                     </div>
                     <span className="text-lg text-amber-100 font-bold uppercase tracking-widest" style={{ textShadow: '2px 2px 0 #000' }}>
-                        Commit<span className="text-green-400">Life</span>
+                        Commit<span className="text-green-400">Garden</span>
                     </span>
                 </Link>
 
@@ -126,7 +126,7 @@ export function Navbar() {
                                                 onClick={() => setMenuOpen(false)}
                                             >
                                                 <Sprout className="w-4 h-4 group-hover:rotate-12 transition-transform" />
-                                                <span>About CommitLife</span>
+                                                <span>About CommitGarden</span>
                                             </Link>
 
                                             {/* Admin Link */}

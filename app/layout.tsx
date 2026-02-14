@@ -10,7 +10,7 @@ const pixelFont = Press_Start_2P({
 });
 
 export const metadata: Metadata = {
-  title: "Commit Life",
+  title: "Commit Garden",
   description: "Gamified Habit Tracker",
 };
 

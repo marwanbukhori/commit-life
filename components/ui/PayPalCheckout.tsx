@@ -56,7 +56,7 @@ export function PayPalCheckout({ amount = "5.00", plan = "monthly" }: { amount?:
                                     value: amount,
                                     currency_code: "USD"
                                 },
-                                description: `CommitLife Premium Upgrade (${plan})`
+                                description: `CommitGarden Premium Upgrade ${plan}`
                             }],
                             intent: "CAPTURE"
                         });
