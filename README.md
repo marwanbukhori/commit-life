@@ -1,130 +1,36 @@
-# 🚀 Commit Life - Habit Tracking App
+This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
 
-A GitHub-style habit tracking mobile app built with React Native, Expo, and Supabase. Track your daily actions across life pillars and visualize your progress with beautiful heatmaps.
+## Getting Started
 
-## 🎯 Features
-
-- **Life Pillars**: Organize habits into meaningful categories (Health, Career, Spiritual, etc.)
-- **Daily Commits**: Log actions and build streaks like GitHub contributions
-- **GitHub-style Heatmap**: Visualize your commitment journey
-- **Progress Tracking**: Monthly summaries and streak tracking
-- **Beautiful UI**: Modern design with Tailwind RN styling
-- **Cross-platform**: iOS and Android support
-
-## 🏗️ Tech Stack
-
-- **Frontend**: React Native with Expo
-- **UI**: NativeWind (Tailwind for React Native)
-- **State Management**: Zustand
-- **Backend**: Supabase (Database, Auth, API)
-- **Navigation**: Expo Router
-- **TypeScript**: Full type safety
-
-## 🚀 Quick Start
-
-1. **Install dependencies**
-
-   ```bash
-   npm install
-   ```
-
-2. **Set up environment variables**
-
-   ```bash
-   cp .env.example .env
-   # Edit .env with your Supabase credentials
-   ```
-
-3. **Start the development server**
-
-   ```bash
-   npx expo start
-   ```
-
-4. **Open the app**
-   - Press `i` for iOS simulator
-   - Press `a` for Android emulator
-   - Scan QR code with Expo Go app for physical device
-
-## 📱 App Structure
-
-```
-app/
-├── (auth)/              # Authentication screens
-│   ├── login.tsx
-│   └── signup.tsx
-├── (tabs)/              # Main app tabs
-│   ├── index.tsx        # Dashboard
-│   ├── pillars.tsx      # Pillars management
-│   ├── heatmap.tsx      # Progress visualization
-│   └── profile.tsx      # User profile
-components/              # Reusable UI components
-├── CommitHeatmap.tsx    # GitHub-style heatmap
-├── PillarCard.tsx       # Pillar display component
-├── AuthGuard.tsx        # Route protection
-└── ...
-stores/                  # Zustand state management
-├── auth-store.ts        # Authentication state
-└── app-store.ts         # App data state
-lib/                     # Utilities and types
-├── types.ts             # TypeScript definitions
-├── supabase.ts          # Supabase client
-├── api.ts               # API functions
-└── sample-data.ts       # Development data
-```
-
-## 🗄️ Database Schema
-
-The app uses Supabase with the following main tables:
-
-- **users**: User accounts and profiles
-- **pillars**: Life areas/categories for habits
-- **habits**: Individual habits within pillars
-- **actions**: Daily commits/logs for habits
-- **summaries**: Monthly aggregated statistics
-
-## 🔧 Development
-
-### Sample Data
-
-The app includes sample data for development. It automatically loads when you first open the app.
-
-### Supabase Setup
-
-1. Create a new Supabase project
-2. Run the SQL migrations in `supabase/migrations/` (to be created)
-3. Update your `.env` file with the project URL and anon key
-
-### Building for Production
+First, run the development server:
 
 ```bash
-# Build for iOS
-npx expo build:ios
-
-# Build for Android
-npx expo build:android
+npm run dev
+# or
+yarn dev
+# or
+pnpm dev
+# or
+bun dev
 ```
 
-## 🎨 Design Philosophy
+Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
 
-- **GitHub-inspired**: Familiar contribution visualization
-- **Life-focused**: Organized around life pillars rather than arbitrary categories
-- **Motivational**: Streaks and visual progress encourage consistency
-- **Clean & Modern**: Minimalist design that doesn't distract from the goal
+You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
 
-## 📊 Coming Soon
+This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
 
-- [ ] Supabase database integration
-- [ ] Real-time sync
-- [ ] Push notifications
-- [ ] Export/sharing features
-- [ ] Advanced analytics
-- [ ] Team/family sharing
+## Learn More
 
-## 🤝 Contributing
+To learn more about Next.js, take a look at the following resources:
 
-This is a personal project, but suggestions and feedback are welcome!
+- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
+- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
 
----
+You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
 
-Built with ❤️ for better habits and a more intentional life.
+## Deploy on Vercel
+
+The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+
+Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
