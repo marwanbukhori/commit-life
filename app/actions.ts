@@ -36,7 +36,7 @@ export async function getDashboardData() {
     });
 
     // Compute dynamic completion status
-    const computedHabits = habits.map(habit => {
+    const computedHabits = habits.map((habit: any) => {
         let isCompleted = false;
 
         if (habit.lastCompletedAt) {
@@ -163,7 +163,7 @@ export async function getPillarDetails(pillarId: string) {
     });
 
     // Compute dynamic completion status (Same logic as dashboard)
-    const computedHabits = habits.map(habit => {
+    const computedHabits = habits.map((habit: any) => {
         let isCompleted = false;
         if (habit.lastCompletedAt) {
             const lastDate = new Date(habit.lastCompletedAt);
